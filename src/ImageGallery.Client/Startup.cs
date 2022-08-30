@@ -7,7 +7,7 @@ using Microsoft.Net.Http.Headers;
 using System;
 
 namespace ImageGallery.Client
-{
+{ 
     public class Startup
     {
         public IConfiguration Configuration { get; }
