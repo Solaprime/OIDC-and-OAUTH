@@ -43,6 +43,7 @@ namespace Marvin.IDP
                   // the client name we be the name to appear on the Consent Screen 
                    ClientName =  "Image Gallery",
                    ClientId = "imagegalleryclient",
+                   RequirePkce = true,
                    // since this grant type works on redirecton URl, we need to Put that URl IN here
                    AllowedGrantTypes = GrantTypes.Code,
                    RedirectUris = new List<string>()
@@ -50,6 +51,12 @@ namespace Marvin.IDP
                        // ths is the Host address of our Web Mvc pplication
                        // Not the signin-oidc that is something we can configure at the Level of our Web Client the signin-oidc is the default value
                        "https://localhost:44389/signin-oidc"
+                   },
+
+                   // we need to tell the Logout Page, it is a default provided for us by OIDC. despite being default always specify as well
+                   PostLogoutRedirectUris = new List<string>()
+                   {
+                         "https://localhost:44389/signout-callback-oidc"
                    },
                    // we need to configure which scopes are allowed to be requested by thus client
                    AllowedScopes =

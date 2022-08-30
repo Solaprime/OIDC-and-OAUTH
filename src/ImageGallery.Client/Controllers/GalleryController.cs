@@ -1,6 +1,8 @@
 ﻿using ImageGallery.Client.ViewModels;
 using ImageGallery.Model;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -182,6 +184,18 @@ namespace ImageGallery.Client.Controllers
         // a simple method to write out some IDentity Info
 
 
+        public async Task Logout()
+        {
+            // we are only log out from our webclient application
+            // u need to  logout of the Idp as well incase we redirect to the homepage if the idp still considere us login we login automatticcaly
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+
+            // an application can only clear it own cookie
+            // after logging out from the IdentityProvider we need to prevent the user 
+            // from being stuck in the IdeentityProvider LogoutPage we need to redirect the user
+
+        }
         public async Task WriteOutIdentityInformation()
         {
             // get the saved identity token

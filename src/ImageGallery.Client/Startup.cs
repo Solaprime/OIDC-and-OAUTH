@@ -70,6 +70,11 @@ namespace ImageGallery.Client
                     options.SaveTokens = true;
                     // the secret we pass must match the secret specify at our IDP LEVel
                     options.ClientSecret = "secret";
+                    // this endpoint is hit so that we can get certain claims from the user Endpoint
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                  
+
+                   
                 });
 
         }
@@ -110,3 +115,9 @@ namespace ImageGallery.Client
 
 // to allow Oidc we need to do two things here, first we need somwthing to take care of the Client side part of the OIDC flow
 // and we need a way to store the users IdenTITY
+
+
+
+
+// if  the Logout page is hit, we need the prevent the user from getting stuck in a IdP LOGoutpage
+//we  need to provide a page the user will be redirected to the default whiich us .../signout-callback-oidc
