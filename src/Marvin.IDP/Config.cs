@@ -1,13 +1,14 @@
-﻿ // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
 namespace Marvin.IDP
 {
-    public static class Config
+    public static class Config 
     {
         // a set of Identity related resource , these maps to claim of the User
         //like firstName and lastName  
@@ -16,16 +17,56 @@ namespace Marvin.IDP
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             { 
-                new IdentityResources.OpenId()
+                // our IDP is configured to support the OpenId and Profile Scope
+                new IdentityResources.OpenId(),
+
+                // this tells us we will ve dealing with user profile info like
+                //Name, Suranme et.c
+                new IdentityResources.Profile()
             };
 
-         
+
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             { };
 
+        //public static IEnumerable<ApiResource> ApiScopes =>
+        //    new ApiResource[]
+        //    { };
+
+        // THis property basicaly allow us to configure the Client that will relate to our IDp 
         public static IEnumerable<Client> Clients =>
             new Client[] 
-            { };
+            { 
+              new Client
+              {
+                  // the client name we be the name to appear on the Consent Screen 
+                   ClientName =  "Image Gallery",
+                   ClientId = "imagegalleryclient",
+                   // since this grant type works on redirecton URl, we need to Put that URl IN here
+                   AllowedGrantTypes = GrantTypes.Code,
+                   RedirectUris = new List<string>()
+                   {
+                       // ths is the Host address of our Web Mvc pplication
+                       // Not the signin-oidc that is something we can configure at the Level of our Web Client the signin-oidc is the default value
+                       "https://localhost:44389/signin-oidc"
+                   },
+                   // we need to configure which scopes are allowed to be requested by thus client
+                   AllowedScopes =
+                  {
+                      // we allow our client acces to the two scopes we configured above
+                       IdentityServerConstants.StandardScopes.OpenId,
+                       IdentityServerConstants.StandardScopes.Profile,
+                  },
+                   // we need to configure seccrets use for Client Authentication
+                   ClientSecrets =
+                  {
+                      // this secrets allowa the Client appllication to call the Token Endpoint
+                      new Secret("secret".Sha256())
+                  }
+              }
+            };
     }
+    // LETs configure our IdentityServer to Log in with the Authorization CodeFlow 
 }
+
