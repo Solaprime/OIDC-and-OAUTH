@@ -1,4 +1,5 @@
-﻿using ImageGallery.Client.ViewModels;
+﻿using IdentityModel.Client;
+using ImageGallery.Client.ViewModels;
 using ImageGallery.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -211,5 +212,44 @@ namespace ImageGallery.Client.Controllers
                 Debug.WriteLine($"Claim type: {claim.Type} - Claim value: {claim.Value}");
             }
         }
+
+
+        // An action for the OrderFrame this action get the User info from the userInfo Endpoint
+        public async Task<IActionResult> OrderFrame()
+        {
+            var idpClient = _httpClientFactory.CreateClient("IDPClient");
+            // this is an extension method in IdentiyModel Nugget, it returns a metaDataResponse
+            var metaDataResponse = await idpClient.GetDiscoveryDocumentAsync();
+
+            if (metaDataResponse.IsError)
+            {
+                throw new Exception(
+                    "Problem accessing the discovery endpoint."
+                    , metaDataResponse.Exception);
+            }
+            // the call to get the needed Tokens, // the needed token is then used in the newuSERInfoRequest endpoint
+            var accessToken = await HttpContext
+              .GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+            // this is an extension method in IdentiyModel Nugget
+            var userInfoResponse = await idpClient.GetUserInfoAsync(
+               new UserInfoRequest
+               {
+                   Address = metaDataResponse.UserInfoEndpoint,
+                   Token = accessToken
+               });
+
+            if (userInfoResponse.IsError)
+            {
+                throw new Exception(
+                    "Problem accessing the UserInfo endpoint."
+                    , userInfoResponse.Exception);
+            }
+            // we get the claim, and pass to the view Model
+            var address = userInfoResponse.Claims
+                .FirstOrDefault(c => c.Type == "address")?.Value;
+
+            return View(new OrderFrameViewModel(address));
+        }
+
     }
 }

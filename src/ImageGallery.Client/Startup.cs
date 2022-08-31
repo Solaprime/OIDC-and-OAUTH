@@ -33,13 +33,26 @@ namespace ImageGallery.Client
             services.AddControllersWithViews()
                  .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-            // create an HttpClient used for accessing the API
+            // create an HttpClient used for accessing the API the image gallery api
             services.AddHttpClient("APIClient", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:44366/");
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             });
+
+            // we need to add another Http client to talk with our IDP Api
+            // this is not compulsory. we only do ut here because we want to manaully call 
+            // our UserEndpoint TO get some userInfo
+
+
+            services.AddHttpClient("IDPClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44318/");
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            });
+
             // ADD the authentication Middleware
             services.AddAuthentication(options =>
             {
