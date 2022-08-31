@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ImageGallery.Client
 { 
@@ -17,6 +19,12 @@ namespace ImageGallery.Client
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            // claim coming from the IDP is mapped to some claim in the webClient
+            // we have a mapping Dictionary, that will be looked at wjen  mapping the claim types
+
+            // if we run in run and debug mode and u comment and Uncommnet this line of code u
+            // u will see the value of this line of code
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -64,17 +72,27 @@ namespace ImageGallery.Client
                     //the redirecturl we set at the level of the IDp
                     // options.CallbackPath = new PathString("....")
                     // scope we want to request, you dont need to add this scope cause by default there are requested
-                    options.Scope.Add("openid");
-                    options.Scope.Add("profile");
+                    //options.Scope.Add("openid");
+                    //options.Scope.Add("profile");
+                    options.Scope.Add("address");
                     // this allows middleware to save tokens
                     options.SaveTokens = true;
                     // the secret we pass must match the secret specify at our IDP LEVel
                     options.ClientSecret = "secret";
                     // this endpoint is hit so that we can get certain claims from the user Endpoint
                     options.GetClaimsFromUserInfoEndpoint = true;
-                  
 
-                   
+                    // we can also remove, delete somw claims
+                  //  options.ClaimActions.Remove("nbf");
+                    options.ClaimActions.DeleteClaims("sid");
+                    options.ClaimActions.DeleteClaims("idp");
+                    options.ClaimActions.DeleteClaims("s_hash");
+                    options.ClaimActions.DeleteClaims("auth_time");
+                    options.ClaimActions.DeleteClaims("address");
+                    // we can also map a claim type to another claim type 
+
+
+
                 });
 
         }

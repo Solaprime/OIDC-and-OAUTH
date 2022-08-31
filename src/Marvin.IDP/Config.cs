@@ -22,7 +22,10 @@ namespace Marvin.IDP
 
                 // this tells us we will ve dealing with user profile info like
                 //Name, Suranme et.c
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                // allowing our Idp to support a new profile in this case the address profile 
+                //this becomes a new resourcr which maps to the  Addreess claim  
+                new IdentityResources.Address()
             };
 
 
@@ -64,6 +67,7 @@ namespace Marvin.IDP
                       // we allow our client acces to the two scopes we configured above
                        IdentityServerConstants.StandardScopes.OpenId,
                        IdentityServerConstants.StandardScopes.Profile,
+                       IdentityServerConstants.StandardScopes.Address
                   },
                    // we need to configure seccrets use for Client Authentication
                    ClientSecrets =
